@@ -1,19 +1,15 @@
-//imports
-
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './create-user.dto';
-import { User } from './user.entity';
+// user.repository.ts
 import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { CreateUserDTO } from './create-user.dto';
 
 export class UserRepository extends Repository<User> {
-    
-    async createUser(userData: CreateUserDto): Promise<User> {
-
-        const user = this.create(userData);
-        const password = await bcrypt.hash(userData.userPassword, 10)
-        return this.save(user)
-
-    }
-
+  async createUser(userData: CreateUserDTO): Promise<User> {
+    const user = this.create(userData);
+    return this.save(user);
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.findOne({ where: { userMail: email } });
+  }
+}

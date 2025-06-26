@@ -1,6 +1,6 @@
 import { IsString, IsEmail, IsNotEmpty, MinLength, IsStrongPassword } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserDTO {
 
   @IsString()
   @IsNotEmpty({ message: 'O nome de usuário é obrigatório.' })
@@ -16,11 +16,3 @@ export class CreateUserDto {
   userPassword: string;
 }
 
-export class UserResponseDto {
-    userId: string;
-    userName: string;
-    userMail: string;
-    createdOn: Date;
-    updatedOn: Date;
-    
-  }
