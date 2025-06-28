@@ -18,13 +18,16 @@ export class User {
     @Column({ select: false })
     userPassword: string;
 
+    @Column({ nullable: true })
+    userAvatar?: string;
+
     @CreateDateColumn()
     createdOn: Date
 
     @UpdateDateColumn()
     updatedOn: Date
 
-    @DeleteDateColumn({ nullable: true })
+    @DeleteDateColumn({ nullable: true })   
     deletedOn: Date
 
 }

@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserDTO } from './create-user.dto';
 import { AuthUserDTO } from './auth-user.dto';
+import { UpdateUserDTO } from './update-user.dto';
+import { CreateAvatarDTO } from './update-avatar.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createUser(userData: CreateUserDTO): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.userPassword, 10);
@@ -27,7 +29,7 @@ export class UsersService {
   async authUser(userData: AuthUserDTO): Promise<{ token: string }> {
     const user = await this.userRepository.findOne({
       where: { userMail: userData.userMail },
-      select: ['userId', 'userMail', 'userPassword'], 
+      select: ['userId', 'userMail', 'userPassword'],
     });
 
     if (!user) {
@@ -51,4 +53,41 @@ export class UsersService {
 
     return { token };
   }
+
+  async updateUser(userData: UpdateUserDTO) {
+    const user = await this.userRepository.findOne({
+      where: { userMail: userData.userMail },
+    });
+  
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+  
+    const updatedFields: Partial<User> = {};
+  
+    if (userData.userName) updatedFields.userName = userData.userName;
+    
+    if (userData.userPassword) {
+      updatedFields.userPassword = await bcrypt.hash(userData.userPassword, 10);
+    }
+  
+    await this.userRepository.update(
+      { userId: user.userId },
+      updatedFields
+    );
+  }
+
+  async updateAvatar(userId: string, avatarUrl: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+  
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+  
+    user.userAvatar = avatarUrl;  // avatar é string: '/avatars/avatar1.jpg'
+  
+    return this.userRepository.save(user);
+  }
+  
+  
 }
