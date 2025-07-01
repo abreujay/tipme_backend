@@ -1,10 +1,11 @@
 // users.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserDTO } from './create-user.dto';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
+import {UpdateArtistNameDTO} from './update-artist-name.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -99,7 +100,7 @@ export class UsersService {
   
     return this.userRepository.save(user);
   }
-  async updateArtistName(userId: string, artistName: string) {
+  async createArtistName(userId: string, artistName: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
   
     if (!user) {
@@ -111,15 +112,36 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
+  async updateArtistName(userId: string, artistName: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+  
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+  
+    user.artistName = artistName;
+    return this.userRepository.save(user);
+  }
+
+  async createBio(userId: string, bio: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+  
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+  
+    user.bio = bio;
+    return this.userRepository.save(user);
+  }
+
   async updateBio(userId: string, bio: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
   
     if (!user) {
-      throw new Error('Usuário não encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
   
     user.bio = bio;
-  
     return this.userRepository.save(user);
   }
   

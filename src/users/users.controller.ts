@@ -1,9 +1,11 @@
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './create-user.dto'
-import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Headers, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
+import { UpdateArtistNameDTO } from './update-artist-name.dto';
+import { UpdateBioDTO } from './update-bio.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -42,16 +44,36 @@ export class UsersController {
 
   @Patch('update-avatar')
   async updateAvatar(@Body() body: { userId: string; avatarUrl: string }) {
-  return this.usersService.updateAvatar(body.userId, body.avatarUrl);
+    return this.usersService.updateAvatar(body.userId, body.avatarUrl);
   }
 
-  @Post('update-artist-name')
-  async updateArtistName(@Body() body: { userId: string; artistName: string }) {
-  return this.usersService.updateArtistName(body.userId, body.artistName);
+  @UseGuards(JwtAuthGuard)
+  @Post('artist-name')
+  async createArtistName(@Body() body: { artistName: string }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.createArtistName(userId, body.artistName);
   }
 
-  @Post('update-bio')
-  async updateBio(@Body() body: { userId: string; bio: string }) {
-  return this.usersService.updateBio(body.userId, body.bio);
+  @UseGuards(JwtAuthGuard)
+  @Patch('artist-name')
+  async updateArtistName(@Body() body: UpdateArtistNameDTO, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateArtistName(userId, body.artistName);
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post('bio')
+  async createBio(@Body() body: { bio: string }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.createBio(userId, body.bio);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('bio')
+
+  async updateBio(@Body() body: UpdateBioDTO, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateBio(userId, body.bio);
   }
 }
