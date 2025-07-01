@@ -12,11 +12,17 @@ export class User {
     userName: string
 
     @Column({unique: true})
-    userMail: string
+    userMail?: string
+
+    @Column({ nullable: true })
+    artistName: string
 
     @Exclude()
     @Column({ select: false })
     userPassword: string;
+
+    @Column({ nullable: true })
+    bio: string
 
     @Column({ nullable: true })
     userAvatar?: string;

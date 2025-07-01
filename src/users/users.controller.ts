@@ -44,4 +44,14 @@ export class UsersController {
   async updateAvatar(@Body() body: { userId: string; avatarUrl: string }) {
   return this.usersService.updateAvatar(body.userId, body.avatarUrl);
   }
+
+  @Post('update-artist-name')
+  async updateArtistName(@Body() body: { userId: string; artistName: string }) {
+  return this.usersService.updateArtistName(body.userId, body.artistName);
+  }
+
+  @Post('update-bio')
+  async updateBio(@Body() body: { userId: string; bio: string }) {
+  return this.usersService.updateBio(body.userId, body.bio);
+  }
 }

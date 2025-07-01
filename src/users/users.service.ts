@@ -5,7 +5,6 @@ import * as jwt from 'jsonwebtoken';
 import { CreateUserDTO } from './create-user.dto';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
-import { CreateAvatarDTO } from './update-avatar.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,7 +21,19 @@ export class UsersService {
     const user = this.userRepository.create({
       ...userData,
       userPassword: hashedPassword,
+      
+      
     });
+
+    
+    const existentUser = await this.userRepository.findOne({
+      where: { userMail: userData.userMail },
+    });
+  
+    if (existentUser) {
+      throw new Error('Usuário com esse email ja cadastrado.');
+    }
+
     return this.userRepository.save(user);
   }
 
@@ -88,6 +99,28 @@ export class UsersService {
   
     return this.userRepository.save(user);
   }
+  async updateArtistName(userId: string, artistName: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
   
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+  
+    user.artistName = artistName;
+  
+    return this.userRepository.save(user);
+  }
+
+  async updateBio(userId: string, bio: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+  
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+  
+    user.bio = bio;
+  
+    return this.userRepository.save(user);
+  }
   
 }
