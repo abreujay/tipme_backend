@@ -31,9 +31,10 @@ export class UsersController {
   }
   @UseGuards(JwtAuthGuard)
   @Patch('/profile')
-  async updateProfile(@Body() updateUserDto: UpdateUserDTO) {
+  async updateProfile(@Body() updateUserDto: UpdateUserDTO, @Request() req) {
 
-    const user = await this.usersService.updateUser(updateUserDto)
+    const userId = req.user.id
+    const user = await this.usersService.updateUser(userId, updateUserDto)
     return {
 
       message: 'Perfil Atualizado!'
@@ -76,4 +77,12 @@ export class UsersController {
     const userId = req.user.id;
     return this.usersService.updateBio(userId, body.bio);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('all-info')
+  async getAllInfo(@Request() req) {
+    const userId = req.user.id;
+    return this.usersService.getAllInfo(userId);
+  }
+
 }

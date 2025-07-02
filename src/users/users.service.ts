@@ -5,10 +5,11 @@ import * as jwt from 'jsonwebtoken';
 import { CreateUserDTO } from './create-user.dto';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
-import {UpdateArtistNameDTO} from './update-artist-name.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+
+
 
 @Injectable()
 export class UsersService {
@@ -66,9 +67,9 @@ export class UsersService {
     return { token };
   }
 
-  async updateUser(userData: UpdateUserDTO) {
+  async updateUser(userId, userData: UpdateUserDTO) {
     const user = await this.userRepository.findOne({
-      where: { userMail: userData.userMail },
+      where: { userId },
     });
   
     if (!user) {
@@ -77,8 +78,8 @@ export class UsersService {
   
     const updatedFields: Partial<User> = {};
   
+    if (userData.userMail) updatedFields.userMail = userData.userMail;
     if (userData.userName) updatedFields.userName = userData.userName;
-    
     if (userData.userPassword) {
       updatedFields.userPassword = await bcrypt.hash(userData.userPassword, 10);
     }
@@ -96,7 +97,7 @@ export class UsersService {
       throw new Error('Usuário não encontrado.');
     }
   
-    user.userAvatar = avatarUrl;  // avatar é string: '/avatars/avatar1.jpg'
+    user.userAvatar = avatarUrl; 
   
     return this.userRepository.save(user);
   }
@@ -143,6 +144,16 @@ export class UsersService {
   
     user.bio = bio;
     return this.userRepository.save(user);
+  }
+
+  async getAllInfo(userId: string) {
+    const user = await this.userRepository.findOne({ where: { userId } });
+  
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+  
+    return user;
   }
   
 }
