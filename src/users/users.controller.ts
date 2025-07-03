@@ -1,12 +1,12 @@
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './create-user.dto'
-import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Headers, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
 import { UpdateArtistNameDTO } from './update-artist-name.dto';
 import { UpdateBioDTO } from './update-bio.dto';
-
+import { UserLinksDTO } from './user-link.dto'
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
@@ -76,6 +76,48 @@ export class UsersController {
   async updateBio(@Body() body: UpdateBioDTO, @Request() req) {
     const userId = req.user.id;
     return this.usersService.updateBio(userId, body.bio);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('link1')
+  async postUserLink1(@Body() body: { userLink1: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.postUserLink1(userId, body.userLink1);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('link2')
+  async postUserLink2(@Body() body: { userLink2: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.postUserLink2(userId, body.userLink2);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('link3')
+  async postUserLink3(@Body() body: { userLink3: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.postUserLink2(userId, body.userLink3);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('link1')
+  async updateUserLink1(@Body() body: { userLink1: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateUserLink1(userId, body.userLink1);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('link2')
+  async updateUserLink2(@Body() body: { userLink2: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateUserLink2(userId, body.userLink2);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('link3')
+  async updateUserLink3(@Body() body: { userLink3: UserLinksDTO }, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateUserLink3(userId, body.userLink3);
   }
 
   @UseGuards(JwtAuthGuard)

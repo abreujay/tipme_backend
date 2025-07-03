@@ -27,6 +27,19 @@ export class User {
     @Column({ nullable: true })
     userAvatar?: string;
 
+    @Column({ nullable: true })
+    userLink1?: string
+
+    @Column({ nullable: true })
+    userLink2?: string
+
+    @Column({ nullable: true })
+    userLink3?: string
+
+    @Exclude()
+    @Column({ nullable: true })
+    pixKey?: string
+
     @CreateDateColumn()
     createdOn: Date
 
