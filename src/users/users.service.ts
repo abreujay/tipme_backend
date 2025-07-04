@@ -66,32 +66,36 @@ export class UsersService {
     return { token };
   }
 
-  async updateUser(userId, userData: UpdateUserDTO) {
+  async updateUser(userId, userData: UpdateUserDTO, userPassword: string) {
     const user = await this.userRepository.findOne({
       where: { userId },
     });
-
+  
     if (!user) {
       throw new Error('Usuário não encontrado.');
     }
-
+  
+    const passwordIsValid = await bcrypt.compare(userPassword, user.userPassword);
+  
+    if (!passwordIsValid) {
+      throw new Error('Senha incorreta.');
+    }
+  
     const updatedFields: Partial<User> = {};
-
+  
     if (userData.userMail) updatedFields.userMail = userData.userMail;
     if (userData.userName) updatedFields.userName = userData.userName;
     if (userData.userPassword) {
       updatedFields.userPassword = await bcrypt.hash(userData.userPassword, 10);
     }
-
+  
     await this.userRepository.update(
       { userId: user.userId },
       updatedFields
     );
-
+  
     return {
-
       message: 'Usuário atualizado!'
-
     }
   }
 
