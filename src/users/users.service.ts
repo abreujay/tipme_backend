@@ -66,16 +66,21 @@ export class UsersService {
     return { token };
   }
 
-  async updateUser(userId, userData: UpdateUserDTO, userPassword: string) {
+  async updateUser(userId, userData: UpdateUserDTO) {
     const user = await this.userRepository.findOne({
       where: { userId },
+      select: ['userId', 'userPassword', 'userMail', 'userName'] // <-- importante
     });
   
     if (!user) {
       throw new Error('Usuário não encontrado.');
     }
   
-    const passwordIsValid = await bcrypt.compare(userPassword, user.userPassword);
+    if (!userData.userPassword || !user.userPassword) {
+      throw new Error('Senha ou hash ausente.');
+    }
+  
+    const passwordIsValid = await bcrypt.compare(userData.password, user.userPassword);
   
     if (!passwordIsValid) {
       throw new Error('Senha incorreta.');
@@ -89,16 +94,13 @@ export class UsersService {
       updatedFields.userPassword = await bcrypt.hash(userData.userPassword, 10);
     }
   
-    await this.userRepository.update(
-      { userId: user.userId },
-      updatedFields
-    );
+    await this.userRepository.update({ userId }, updatedFields);
   
     return {
-      message: 'Usuário atualizado!'
-    }
+      message: 'Usuário atualizado!',
+    };
   }
-
+  
   async updateAvatar(userId: string, avatarUrl: string) {
     const user = await this.userRepository.findOne({ where: { userId } });
 

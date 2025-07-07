@@ -29,14 +29,14 @@ export class UsersController {
 
     }
   }
-  @UseGuards(JwtAuthGuard)
-  @Patch('/profile')
-  async updateProfile(@Body() updateUserDto: UpdateUserDTO, @Body('password') userPassword: string, @Request() req) {
-    const userId = req.user.id
-    const user = await this.usersService.updateUser(userId, updateUserDto, userPassword)
-    return user
-  }
 
+  @Patch('/profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@Body() updateUserDto: UpdateUserDTO, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.updateUser(userId, updateUserDto);
+  }
+  
   @UseGuards(JwtAuthGuard)
   @Patch('update-avatar')
   async updateAvatar(@Body() body: { avatarUrl: string }, @Request() req) {
