@@ -1,33 +1,28 @@
 import { UsersService } from './users.service';
-import { CreateUserDTO } from './create-user.dto'
-import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Request } from '@nestjs/common';
+import { CreateUserDTO } from './create-user.dto';
+import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Request, Param } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthUserDTO } from './auth-user.dto';
 import { UpdateUserDTO } from './update-user.dto';
-import { UpdateArtistNameDTO } from './update-artist-name.dto';
-import { UpdateBioDTO } from './update-bio.dto';
-import { UserLinksDTO } from './user-link.dto'
+import { UserLinksDTO } from './user-link.dto';
+
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('/register')
   async registerUser(@Body() createUserDto: CreateUserDTO) {
-    const user = await this.usersService.createUser(createUserDto);
-    return user;
+    return this.usersService.createUser(createUserDto);
   }
 
   @Post('/login')
   async login(@Body() authUserDto: AuthUserDTO) {
-
-    const token = await this.usersService.authUser(authUserDto)
+    const token = await this.usersService.authUser(authUserDto);
     return {
-
       message: 'Login Realizado com Sucesso!',
-      token
-
-    }
+      token,
+    };
   }
 
   @Patch('/profile')
@@ -36,91 +31,69 @@ export class UsersController {
     const userId = req.user.id;
     return this.usersService.updateUser(userId, updateUserDto);
   }
-  
-  @UseGuards(JwtAuthGuard)
+
   @Patch('update-avatar')
-  async updateAvatar(@Body() body: { avatarUrl: string }, @Request() req) {
+  @UseGuards(JwtAuthGuard)
+  async updateAvatar(@Body('avatarUrl') avatarUrl: string, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.updateAvatar(userId, body.avatarUrl);
+    return this.usersService.updateAvatar(userId, avatarUrl);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('artist-name')
-  async createArtistName(@Body() body: { artistName: string }, @Request() req) {
+  @UseGuards(JwtAuthGuard)
+  async createArtistName(@Body('artistName') artistName: string, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.createArtistName(userId, body.artistName);
+    return this.usersService.createArtistName(userId, artistName);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('artist-name')
-  async updateArtistName(@Body() body: UpdateArtistNameDTO, @Request() req) {
+  @UseGuards(JwtAuthGuard)
+  async updateArtistName(@Body('artistName') artistName: string, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.updateArtistName(userId, body.artistName);
+    return this.usersService.updateArtistName(userId, artistName);
   }
 
-
-  @UseGuards(JwtAuthGuard)
   @Post('bio')
-  async createBio(@Body() body: { bio: string }, @Request() req) {
+  @UseGuards(JwtAuthGuard)
+  async createBio(@Body('bio') bio: string, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.createBio(userId, body.bio);
+    return this.usersService.createBio(userId, bio);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('bio')
-
-  async updateBio(@Body() body: UpdateBioDTO, @Request() req) {
+  @UseGuards(JwtAuthGuard)
+  async updateBio(@Body('bio') bio: string, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.updateBio(userId, body.bio);
+    return this.usersService.updateBio(userId, bio);
   }
 
+  // Unificando links em métodos parametrizados
+  @Post('link/:number')
   @UseGuards(JwtAuthGuard)
-  @Post('link1')
-  async postUserLink1(@Body() body: { userLink1: UserLinksDTO }, @Request() req) {
+  async postUserLink(@Param('number') number: string, @Body() userLink: UserLinksDTO, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.postUserLink1(userId, body.userLink1);
+    const linkNumber = parseInt(number, 10);
+    if (![1, 2, 3].includes(linkNumber)) {
+      throw new Error('Número do link inválido. Use 1, 2 ou 3.');
+    }
+    return this.usersService.postUserLink(userId, userLink, linkNumber as 1 | 2 | 3);
   }
 
+  @Patch('link/:number')
   @UseGuards(JwtAuthGuard)
-  @Post('link2')
-  async postUserLink2(@Body() body: { userLink2: UserLinksDTO }, @Request() req) {
+  async updateUserLink(@Param('number') number: string, @Body() userLink: UserLinksDTO, @Request() req) {
     const userId = req.user.id;
-    return this.usersService.postUserLink2(userId, body.userLink2);
+    const linkNumber = parseInt(number, 10);
+    if (![1, 2, 3].includes(linkNumber)) {
+      throw new Error('Número do link inválido. Use 1, 2 ou 3.');
+    }
+    return this.usersService.updateUserLink(userId, userLink, linkNumber as 1 | 2 | 3);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('link3')
-  async postUserLink3(@Body() body: { userLink3: UserLinksDTO }, @Request() req) {
-    const userId = req.user.id;
-    return this.usersService.postUserLink2(userId, body.userLink3);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('link1')
-  async updateUserLink1(@Body() body: { userLink1: UserLinksDTO }, @Request() req) {
-    const userId = req.user.id;
-    return this.usersService.updateUserLink1(userId, body.userLink1);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('link2')
-  async updateUserLink2(@Body() body: { userLink2: UserLinksDTO }, @Request() req) {
-    const userId = req.user.id;
-    return this.usersService.updateUserLink2(userId, body.userLink2);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('link3')
-  async updateUserLink3(@Body() body: { userLink3: UserLinksDTO }, @Request() req) {
-    const userId = req.user.id;
-    return this.usersService.updateUserLink3(userId, body.userLink3);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('all-info')
+  @UseGuards(JwtAuthGuard)
   async getAllInfo(@Request() req) {
     const userId = req.user.id;
     return this.usersService.getAllInfo(userId);
   }
-
 }
