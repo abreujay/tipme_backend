@@ -1,10 +1,11 @@
 import { UsersService } from './users.service';
-import { CreateUserDTO } from './create-user.dto';
-import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Request, Param } from '@nestjs/common';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor, Get, Patch, UseGuards, Request, Param, Delete } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AuthUserDTO } from './auth-user.dto';
-import { UpdateUserDTO } from './update-user.dto';
-import { UserLinksDTO } from './user-link.dto';
+import { AuthUserDTO } from './dto/auth-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
+import { UserLinksDTO } from './dto/user-link.dto';
+import { DeleteUserDTO } from './dto/delete-user.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -95,5 +96,12 @@ export class UsersController {
   async getAllInfo(@Request() req) {
     const userId = req.user.id;
     return this.usersService.getAllInfo(userId);
+  }
+
+  @Delete('delete-user')
+  @UseGuards(JwtAuthGuard)
+  async deleteUser(@Body () deleteUserDto: DeleteUserDTO, @Request() req) {
+    const userId = req.user.id;
+    return this.usersService.deleteUser(userId, deleteUserDto.userPassword);
   }
 }

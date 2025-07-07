@@ -1,7 +1,7 @@
 // user.repository.ts
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { CreateUserDTO } from './create-user.dto';
+import { CreateUserDTO } from './dto/create-user.dto';
 
 export class UserRepository extends Repository<User> {
   async createUser(userData: CreateUserDTO): Promise<User> {

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { CreateUserDTO } from './create-user.dto';
-import { AuthUserDTO } from './auth-user.dto';
-import { UpdateUserDTO } from './update-user.dto';
-import { UserLinksDTO } from './user-link.dto';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { AuthUserDTO } from './dto/auth-user.dto';
+import { UpdateUserDTO } from './dto/update-user.dto';
+import { UserLinksDTO } from './dto/user-link.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -141,5 +141,24 @@ export class UsersService {
       throw new NotFoundException('Usuário não encontrado.');
     }
     return user;
+  }
+
+  async deleteUser(userId: string, userPassword: string) {
+
+    const user = await this.userRepository.findOne({ where: { userId }, select: ['userId', 'userPassword'] });
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    const passwordIsValid = await bcrypt.compare(userPassword, user.userPassword);
+    if (!passwordIsValid) {
+      throw new BadRequestException('Senha incorreta, tente novamente.');
+      
+    }
+    return this.userRepository.delete({ userId }), {
+
+      message: 'Usuário deletado com sucesso!'
+      
+    }
   }
 }
