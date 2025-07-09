@@ -11,8 +11,9 @@ export class PixController {
     @UseGuards(JwtAuthGuard)
     @Post('/save-pix')
     async savePix(@Request() req, @Body() pixData: SavePixDTO) {
-        await this.pixService.savePix(req.user.userId, pixData);
-        return { message: 'Chave Pix salva com sucesso' };
+      console.log('req.user:', req.user);
+      await this.pixService.savePix(req.user.id, pixData);
+      return { message: 'Chave Pix salva com sucesso' };
     }
 
     @Get('/get-pix/:id')
@@ -23,6 +24,5 @@ export class PixController {
       }
       return this.pixService.getPix(id, numericValue);
     }
-    
 
 }

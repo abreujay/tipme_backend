@@ -13,20 +13,31 @@ export class PixService {
   ) {}
 
   async savePix(userId: string, pixData: SavePixDTO) {
+    console.log('savePix: userId', userId);
+    console.log('savePix: pixData', pixData);
+  
     const user = await this.userRepository.findOne({ where: { userId } });
-
+    console.log('savePix: user', user);
+  
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
-
+  
     const updatedFields: Partial<User> = {
       pixKey: pixData.pixKey,
-      pixName: pixData.name,
-      pixCity: pixData.city,
+      pixName: pixData.pixName,
+      pixCity: pixData.pixCity,
     };
-
+  
+    console.log('savePix: updatedFields', updatedFields);
+  
     await this.userRepository.update({ userId }, updatedFields);
-
+    console.log('savePix: update executado');
+  
+    // Verifique se os dados estão sendo atualizados corretamente
+    const userUpdated = await this.userRepository.findOne({ where: { userId } });
+    console.log('savePix: userUpdated', userUpdated);
+  
     return { message: 'Dados Pix atualizados com sucesso' };
   }
 

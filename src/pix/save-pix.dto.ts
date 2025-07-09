@@ -13,10 +13,10 @@ export class SavePixDTO {
   @IsString()
   @IsNotEmpty()
   @MaxLength(25)
-  name: string;
+  pixName: string;
 
   @IsString()
   @IsNotEmpty()
   @MaxLength(15)
-  city: string;
+  pixCity: string;
 }
