@@ -135,6 +135,14 @@ export class UsersService {
     return this.updateUserField(userId, field, userLink.link, `Link ${linkNumber} atualizado`);
   }
 
+  async getUserData(userId: string) {
+    const user = await this.userRepository.findOne({ where: { userId }, select: ['userAvatar', 'artistName', 'bio', 'userLink1', 'userLink2', 'userLink3'] });
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+    return user;
+  }
+
   async getAllInfo(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { userId } });
     if (!user) {

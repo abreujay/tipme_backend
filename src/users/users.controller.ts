@@ -90,6 +90,11 @@ export class UsersController {
     }
     return this.usersService.updateUserLink(userId, userLink, linkNumber as 1 | 2 | 3);
   }
+  
+  @Get('get-user-data/:id')
+  async getUserData(@Param('id') id: string) {
+    return this.usersService.getUserData(id);
+  }
 
   @Get('all-info')
   @UseGuards(JwtAuthGuard)
