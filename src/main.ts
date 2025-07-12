@@ -24,6 +24,7 @@ async function bootstrap() {
       'https://tipme-frontend.vercel.app/',
       'https://tipme-frontend-7zn4.vercel.app',
       'https://tipme-frontend-7zn4.vercel.app/',
+      'https://tipmeunderground.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
     allowedHeaders: [
