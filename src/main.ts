@@ -22,6 +22,8 @@ async function bootstrap() {
       // Domínios de produção
       'https://tipme-frontend.vercel.app',
       'https://tipme-frontend.vercel.app/',
+      'https://tipme-frontend-7zn4.vercel.app',
+      'https://tipme-frontend-7zn4.vercel.app/',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
     allowedHeaders: [
